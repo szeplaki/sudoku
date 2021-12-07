@@ -103,6 +103,47 @@ def search_coordinates(nullásitott):
     return list_of_tuples
 
 
+def validate_user_choice(board, dont_touch_coord):
+    user_choice = input("Which square do you want to fill out?" ).upper()
+    sorok_szama = len(board)
+    oszlopok_szama = len(board[0])
+
+    valid_rows = [i for i in alpha[0:oszlopok_szama]]
+    valid_cols = [i for i in range(1,sorok_szama+1)]
+    
+    
+    
+    while True:
+        if user_choice == "Q":
+            print("Bye_bye!")
+            quit()
+        elif user_choice[0] in valid_rows and user_choice[1] in str(valid_cols):
+            a = alpha.index(user_choice[0])
+            b = int(user_choice[1]) - 1
+            tapple = (a,)
+            whole_tapple = tapple + (b,)
+            if whole_tapple in dont_touch_coord:
+                print("This field cannot be changed! Choose another one babe! ")
+                user_choice = input("Which square do you want to fill out?" ).upper()
+            else:
+                return a,b
+                #return user_choice
+        else:
+            print("Invalid input")
+            user_choice = input("Which square do you want to fill out?" ).upper()
+            continue
+
+
+
+
+# def set_coordinates(user_choice, dont_touch_coord):
+#     while True:
+#         a = alpha.index(user_choice[0])
+#         b = int(user_choice[1]) - 1
+
+        
+
+
 def main():
     generate_sudoku_array()
     print_board(sudoku_array)
@@ -116,41 +157,16 @@ def main():
     print_board(nullásitott)
     dont_touch_coord = search_coordinates(nullásitott)
     print(dont_touch_coord)
+    validate_user_choice(nullásitott, dont_touch_coord)
+    #set_coordinates(coords, dont_touch_coord)
 
 
 main()
 
-def validate_user_choice(board):
-    user_choice = ask_for_input()
-    sorok_szama = len(board)
-    oszlopok_szama = len(board[0])
 
-    valid_rows = [i for i in alpha[0:oszlopok_szama]]
-    valid_cols = [i for i in range(1,sorok_szama+1)]
-    
-    
-    while True:
-        if user_choice == "Q":
-            print("Bye_bye!")
-            quit()
-        elif user_choice[0] in valid_rows and user_choice[1] in str(valid_cols):
-            return user_choice
-        else:
-            print("Invalid input")
-            user_choice = ask_for_input()
-            continue
-
-def ask_for_input():
-    user_choice = input("Which tile do you want to reveal? ").upper()
-    return user_choice
 
     
-def set_coordinates(user_choice):
 
-    a = alpha.index(user_choice[0])
-    b = int(user_choice[1]) - 1
-    
-    return a,b
 
 
     
