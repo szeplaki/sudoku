@@ -64,19 +64,17 @@ def create_list_of_indices():
 
 
 def create_hard_board(indexlst):
-    create_60_missing_hard = sorted(indexlst[0:60])
+    create_60_missing_hard = sorted(indexlst[0:1])
     return create_60_missing_hard
 
 def create_dont_touch_numbers(indexlst):
-    rest_indicies_of_hard = sorted(indexlst[60:])
+    rest_indicies_of_hard = sorted(indexlst[1:])
     return rest_indicies_of_hard
 
 
 def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
     for i in range(len(merge_sudoku_array)):
-
         for index in lst_with_zeros:
-
             if i == index:
                 merge_sudoku_array[i] = '.'
         for tiltott in dont_touch_numbers:
@@ -84,13 +82,6 @@ def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
                 merge_sudoku_array[i] = "\033[91m{}\033[00m" .format(merge_sudoku_array[i])
     return merge_sudoku_array
 
-
-
-def paint_to_red(board):
-    for row in board:
-        for element in row:
-            if element != ".":
-                element = prRed(element)
 
 def divide_list_by_nine(lista):
     divided_list = [lista[x:x+9] for x in range(0, len(lista), 9)]
@@ -116,8 +107,6 @@ def validate_user_choice(board, dont_touch_coord):
 
     valid_rows = [i for i in alpha[0:oszlopok_szama]]
     valid_cols = [i for i in range(1,sorok_szama+1)]
-    
-    
     
     while True:
         if user_choice == "Q":
@@ -167,6 +156,18 @@ def check_win(board):
     return point_counter
 
 
+def create_array_to_check(lst):
+    filled_array = []
+    for element in lst:
+        if len(element) > 1:
+            vizsgálandó = int(element[5])
+            filled_array.append(vizsgálandó)
+        else:
+            vizsgálandó = int(element)
+            filled_array.append(vizsgálandó)
+    return filled_array
+
+
 def main():
     generate_sudoku_array()
     merged_array = merge_sudoku_array_together(sudoku_array)
@@ -176,24 +177,20 @@ def main():
     red_nums = create_dont_touch_numbers(index_list)
     divided = hide_numbers(merged_array, hard_board, red_nums)
     nullásitott = divide_list_by_nine(divided)
-    print(nullásitott)
     print_board(nullásitott)
     dont_touch_coord = search_coordinates(nullásitott)
     while True:
         coordinates = validate_user_choice(nullásitott, dont_touch_coord)
         number = ask_num_from_1_to_9()
         filled = fill_board(coordinates, number, nullásitott)
-        print_board(nullásitott)
+        összevont_nullás = merge_sudoku_array_together(nullásitott)
         point_counter = check_win(nullásitott)
-        print(point_counter)
-        #merged_filled_array = merge_sudoku_array_together(nullásitott)
         if point_counter == 0:
-            merged_filled_array = merge_sudoku_array_together(nullásitott)
-            #how tocompare two array, weather the are same, or not
-            print("You already guessed a word.")
-            quit()
-
-
+            array_to_check = create_array_to_check(összevont_nullás)
+            one_array = merge_sudoku_array_together(sudoku_array)
+            if array_to_check == one_array:
+                print("You already guessed all the numbers!")
+                quit()
 
 
 main()
