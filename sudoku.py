@@ -63,13 +63,13 @@ def create_list_of_indices():
     return index_list
 
 
-def create_hard_board(indexlst, missing_squares):
-    create_60_missing_hard = sorted(indexlst[0:missing_squares])
-    return create_60_missing_hard
+def create_indicies_of_missings(indexlst, missing_squares):
+    not_displayed_numbers = sorted(indexlst[0:missing_squares])
+    return not_displayed_numbers
 
 def create_dont_touch_numbers(indexlst, missing_squares):
-    rest_indicies_of_hard = sorted(indexlst[missing_squares:])
-    return rest_indicies_of_hard
+    displayed_numbers = sorted(indexlst[missing_squares:])
+    return displayed_numbers
 
 
 def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
@@ -77,36 +77,36 @@ def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
         for index in lst_with_zeros:
             if i == index:
                 merge_sudoku_array[i] = '.'
-        for tiltott in dont_touch_numbers:
-            if i == tiltott:
+        for forbidden in dont_touch_numbers:
+            if i == forbidden:
                 merge_sudoku_array[i] = "\033[93m{}\033[00m" .format(merge_sudoku_array[i])
     return merge_sudoku_array
 
 
-def divide_list_by_nine(lista):
-    divided_list = [lista[x:x+9] for x in range(0, len(lista), 9)]
+def divide_list_by_nine(big_array):
+    divided_list = [big_array[x:x+9] for x in range(0, len(big_array), 9)]
     return divided_list
 
 
-def search_coordinates(nullásitott):
+def search_coordinates(dotted_list):
     list_of_tuples = []
-    for i in range(len(nullásitott)):
-        for j in range(len(nullásitott[0])):
-            if nullásitott[i][j] != ".":
-                c = (i,)
-                f = j
-                tup = c + (f,)
-                list_of_tuples.append(tup)
+    for i in range(len(dotted_list)):
+        for j in range(len(dotted_list[0])):
+            if dotted_list[i][j] != ".":
+                first_coordinate = (i,)
+                second_coordinate = j
+                tuple_of_coordinates = first_coordinate + (second_coordinate,)
+                list_of_tuples.append(tuple_of_coordinates)
     return list_of_tuples
 
 
 def validate_user_choice(board, dont_touch_coord):
     user_choice = input("Which square do you want to fill out?" ).upper()
-    sorok_szama = len(board)
-    oszlopok_szama = len(board[0])
+    num_of_rows = len(board)
+    num_of_columns = len(board[0])
 
-    valid_rows = [i for i in alpha[0:oszlopok_szama]]
-    valid_cols = [i for i in range(1,sorok_szama+1)]
+    valid_rows = [i for i in alpha[0:num_of_columns]]
+    valid_cols = [i for i in range(1,num_of_rows+1)]
     
     while True:
         if user_choice == "Q":
@@ -160,11 +160,11 @@ def create_array_to_check(lst):
     filled_array = []
     for element in lst:
         if len(element) > 1:
-            vizsgálandó = int(element[5])
-            filled_array.append(vizsgálandó)
+            to_be_examined = int(element[5])
+            filled_array.append(to_be_examined)
         else:
-            vizsgálandó = int(element)
-            filled_array.append(vizsgálandó)
+            to_be_examined = int(element)
+            filled_array.append(to_be_examined)
     return filled_array
 
 
@@ -204,21 +204,21 @@ def game_core(missing_squares):
     generate_sudoku_array()
     merged_array = merge_sudoku_array_together(sudoku_array)
     index_list = create_list_of_indices()
-    hard_board = create_hard_board(index_list, missing_squares)
-    red_nums = create_dont_touch_numbers(index_list, missing_squares)
-    divided = hide_numbers(merged_array, hard_board, red_nums)
-    nullásitott = divide_list_by_nine(divided)
-    print_board(nullásitott)
-    dont_touch_coord = search_coordinates(nullásitott)
+    sorted_index_list = create_indicies_of_missings(index_list, missing_squares)
+    fix_numbers = create_dont_touch_numbers(index_list, missing_squares)
+    dotted_colored_list = hide_numbers(merged_array, sorted_index_list, fix_numbers)
+    list_divided_by_9 = divide_list_by_nine(dotted_colored_list)
+    print_board(list_divided_by_9)
+    dont_touch_coord = search_coordinates(list_divided_by_9)
     while True:
-        coordinates = validate_user_choice(nullásitott, dont_touch_coord)
+        coordinates = validate_user_choice(list_divided_by_9, dont_touch_coord)
         number = ask_num_from_1_to_9()
-        filled = fill_board(coordinates, number, nullásitott)
-        print_board(nullásitott)
-        összevont_nullás = merge_sudoku_array_together(nullásitott)
-        point_counter = check_win(nullásitott)
+        fill_board(coordinates, number, list_divided_by_9)
+        print_board(list_divided_by_9)
+        replaced_by_guess = merge_sudoku_array_together(list_divided_by_9)
+        point_counter = check_win(list_divided_by_9)
         if point_counter == 0:
-            array_to_check = create_array_to_check(összevont_nullás)
+            array_to_check = create_array_to_check(replaced_by_guess)
             one_array = merge_sudoku_array_together(sudoku_array)
             if array_to_check == one_array:
                 print("""  ______          _            _   _      _ 
