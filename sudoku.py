@@ -1,5 +1,5 @@
 import random
-
+import os
 
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alpha = list(alphabet)
@@ -37,9 +37,6 @@ def generate_sudoku_array():
 
 
 def print_board(board):
-    
-    
-    
     print("      "+"   ".join([str(i) for i in range(1,len(board)+1)]) + "\n")
     print("    +" + "---+"*9)
     for i, row in enumerate(board):
@@ -55,7 +52,6 @@ def merge_sudoku_array_together(sudoku_array):
     merge_sudoku_array = []
     for elem in sudoku_array:
         merge_sudoku_array += elem
-    print(merge_sudoku_array)
     return merge_sudoku_array
 
 
@@ -69,22 +65,32 @@ def create_list_of_indices():
 
 def create_hard_board(indexlst):
     create_60_missing_hard = sorted(indexlst[0:60])
-    print(create_60_missing_hard)
     return create_60_missing_hard
 
 def create_dont_touch_numbers(indexlst):
     rest_indicies_of_hard = sorted(indexlst[60:])
-    print(rest_indicies_of_hard)
     return rest_indicies_of_hard
 
 
-def hide_numbers(merge_sudoku_array, lst_with_zeros):
+def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
     for i in range(len(merge_sudoku_array)):
+
         for index in lst_with_zeros:
+
             if i == index:
                 merge_sudoku_array[i] = '.'
+        for tiltott in dont_touch_numbers:
+            if i == tiltott:
+                merge_sudoku_array[i] = "\033[91m{}\033[00m" .format(merge_sudoku_array[i])
     return merge_sudoku_array
 
+
+
+def paint_to_red(board):
+    for row in board:
+        for element in row:
+            if element != ".":
+                element = prRed(element)
 
 def divide_list_by_nine(lista):
     divided_list = [lista[x:x+9] for x in range(0, len(lista), 9)]
@@ -127,54 +133,70 @@ def validate_user_choice(board, dont_touch_coord):
                 user_choice = input("Which square do you want to fill out?" ).upper()
             else:
                 return a,b
-                #return user_choice
         else:
             print("Invalid input")
             user_choice = input("Which square do you want to fill out?" ).upper()
             continue
 
+def ask_num_from_1_to_9():
+    guessed_number = input("Type number between 1 and 9: ")
+    while True:
+        if guessed_number not in "123456789":
+            print("Please read about how to play sudoku, sweetie!")
+            guessed_number = input("Type number between 1 and 9: ")
+            continue
+        return guessed_number
+
+def fill_board(user_choice, number, board):
+    x = user_choice[0]
+    y = user_choice[1]
+    board[x][y] = number
+    return board[x][y]
+
+    
+def console_clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
-
-# def set_coordinates(user_choice, dont_touch_coord):
-#     while True:
-#         a = alpha.index(user_choice[0])
-#         b = int(user_choice[1]) - 1
-
-        
+def check_win(board):
+    point_counter = 0
+    for row in board:
+        for square in row:
+            if square == ".":
+                point_counter += 1
+    return point_counter
 
 
 def main():
     generate_sudoku_array()
-    print_board(sudoku_array)
     merged_array = merge_sudoku_array_together(sudoku_array)
+    print(merged_array)
     index_list = create_list_of_indices()
     hard_board = create_hard_board(index_list)
-    create_dont_touch_numbers(index_list)
-    divided = hide_numbers(merged_array, hard_board)
+    red_nums = create_dont_touch_numbers(index_list)
+    divided = hide_numbers(merged_array, hard_board, red_nums)
     nullásitott = divide_list_by_nine(divided)
     print(nullásitott)
     print_board(nullásitott)
     dont_touch_coord = search_coordinates(nullásitott)
-    print(dont_touch_coord)
-    validate_user_choice(nullásitott, dont_touch_coord)
-    #set_coordinates(coords, dont_touch_coord)
+    while True:
+        coordinates = validate_user_choice(nullásitott, dont_touch_coord)
+        number = ask_num_from_1_to_9()
+        filled = fill_board(coordinates, number, nullásitott)
+        print_board(nullásitott)
+        point_counter = check_win(nullásitott)
+        print(point_counter)
+        #merged_filled_array = merge_sudoku_array_together(nullásitott)
+        if point_counter == 0:
+            merged_filled_array = merge_sudoku_array_together(nullásitott)
+            #how tocompare two array, weather the are same, or not
+            print("You already guessed a word.")
+            quit()
+
+
 
 
 main()
-
-
-
-    
-
-
-
-    
-def write_first_letter(board,lst,x,y):
-    board[x][y] = lst[x][y]
-    return board[x][y]
-
-
 
 
 # create_50_missing_middle = sorted(index_list[0:50])
