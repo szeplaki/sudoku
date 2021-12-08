@@ -63,12 +63,12 @@ def create_list_of_indices():
     return index_list
 
 
-def create_hard_board(indexlst):
-    create_60_missing_hard = sorted(indexlst[0:1])
+def create_hard_board(indexlst, missing_squares):
+    create_60_missing_hard = sorted(indexlst[0:missing_squares])
     return create_60_missing_hard
 
-def create_dont_touch_numbers(indexlst):
-    rest_indicies_of_hard = sorted(indexlst[1:])
+def create_dont_touch_numbers(indexlst, missing_squares):
+    rest_indicies_of_hard = sorted(indexlst[missing_squares:])
     return rest_indicies_of_hard
 
 
@@ -79,7 +79,7 @@ def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
                 merge_sudoku_array[i] = '.'
         for tiltott in dont_touch_numbers:
             if i == tiltott:
-                merge_sudoku_array[i] = "\033[91m{}\033[00m" .format(merge_sudoku_array[i])
+                merge_sudoku_array[i] = "\033[93m{}\033[00m" .format(merge_sudoku_array[i])
     return merge_sudoku_array
 
 
@@ -168,13 +168,44 @@ def create_array_to_check(lst):
     return filled_array
 
 
-def main():
+def add_game_mode():
+    game_mode = input('''Select level!
+
+    Press 1 for EASY level
+    Press 2 for MIDDLE level 
+    Press 3 for HARD level 
+    Press 4 for DEMO mode 
+    
+    For qutting the game type 'Q'
+    ''')
+    console_clear()
+    return game_mode
+
+
+
+def valid_input_mode(game_mode):
+    if game_mode not in '1234Qq':
+        print('INVALID INPUT!')
+        add_game_mode()
+    else:
+        if game_mode == '1':
+            game_core(40)
+        elif game_mode == '2':
+            game_core(50)
+        elif game_mode == '3':
+            game_core(60)
+        elif game_mode == '4':
+            game_core(1)
+        elif game_mode == 'Q' or 'q':
+            quit()
+
+
+def game_core(missing_squares):
     generate_sudoku_array()
     merged_array = merge_sudoku_array_together(sudoku_array)
-    print(merged_array)
     index_list = create_list_of_indices()
-    hard_board = create_hard_board(index_list)
-    red_nums = create_dont_touch_numbers(index_list)
+    hard_board = create_hard_board(index_list, missing_squares)
+    red_nums = create_dont_touch_numbers(index_list, missing_squares)
     divided = hide_numbers(merged_array, hard_board, red_nums)
     nullásitott = divide_list_by_nine(divided)
     print_board(nullásitott)
@@ -183,6 +214,7 @@ def main():
         coordinates = validate_user_choice(nullásitott, dont_touch_coord)
         number = ask_num_from_1_to_9()
         filled = fill_board(coordinates, number, nullásitott)
+        print_board(nullásitott)
         összevont_nullás = merge_sudoku_array_together(nullásitott)
         point_counter = check_win(nullásitott)
         if point_counter == 0:
@@ -193,11 +225,11 @@ def main():
                 quit()
 
 
+def main():
+    print('HAVE FUN MATE! :D')
+    mode = add_game_mode()
+    valid_input_mode(mode)
+ 
 main()
 
 
-# create_50_missing_middle = sorted(index_list[0:50])
-# print(create_50_missing_middle)
-
-# create_40_missing_easy = sorted(index_list[0:40])
-# print(create_40_missing_easy)
