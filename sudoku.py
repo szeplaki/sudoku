@@ -213,6 +213,7 @@ def game_core(missing_squares):
     while True:
         coordinates = validate_user_choice(list_divided_by_9, dont_touch_coord)
         number = ask_num_from_1_to_9()
+        console_clear()
         fill_board(coordinates, number, list_divided_by_9)
         print_board(list_divided_by_9)
         replaced_by_guess = merge_sudoku_array_together(list_divided_by_9)
