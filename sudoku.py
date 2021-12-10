@@ -3,38 +3,40 @@ import os
 
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alpha = list(alphabet)
-sudoku_array = []
 
 
-def generate_first_row():
+def generate_first_row(sudoku_array):
     sudoku_first_row = []
     for i in range(1,10):
         sudoku_first_row.append(i)
     random.shuffle(sudoku_first_row)
     sudoku_array.append(sudoku_first_row)
-    return sudoku_first_row
+    return sudoku_array
 
-def rotate_by_three(row):
+def rotate_by_three(sudoku_array):
+    row = sudoku_array[-1]
     for i in range(2):
         row = row[6:9] + row[0:6]
         sudoku_array.append(row)
-    return row
+    return sudoku_array
 
-def rotate_by_one(row):
+def rotate_by_one(sudoku_array):
+    row = sudoku_array[-1]
     row = row[-1:] + row[0:8]
     sudoku_array.append(row)
-    return row
+    return sudoku_array
 
 
 def generate_sudoku_array():
-    first_row = generate_first_row()
-    sec_and_third = rotate_by_three(first_row)
-    fourth = rotate_by_one(sec_and_third)
-    fifth_and_sixth = rotate_by_three(fourth)
-    seventh = rotate_by_one(fifth_and_sixth)
-    eigtht_and_ninth = rotate_by_three(seventh)
-    return eigtht_and_ninth
-
+    sudoku_array = []
+    sudoku_array = generate_first_row(sudoku_array)
+    sudoku_array = rotate_by_three(sudoku_array)
+    sudoku_array = rotate_by_one(sudoku_array)
+    sudoku_array = rotate_by_three(sudoku_array)
+    sudoku_array = rotate_by_one(sudoku_array)
+    sudoku_array = rotate_by_three(sudoku_array) # last row_t visszaadni
+    return sudoku_array # mentor review
+# inkább hosszabb, de érthetőbb legyen
 
 def print_board(board):
     print("      "+"   ".join([str(i) for i in range(1,len(board)+1)]) + "\n")
@@ -79,7 +81,7 @@ def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
                 merge_sudoku_array[i] = '.'
         for forbidden in dont_touch_numbers:
             if i == forbidden:
-                merge_sudoku_array[i] = "\033[93m{}\033[00m" .format(merge_sudoku_array[i])
+                merge_sudoku_array[i] = "\033[31m{}\033[00m" .format(merge_sudoku_array[i])
     return merge_sudoku_array
 
 
@@ -118,7 +120,7 @@ def validate_user_choice(board, dont_touch_coord):
             tapple = (a,)
             whole_tapple = tapple + (b,)
             if whole_tapple in dont_touch_coord:
-                print("This field cannot be changed! Choose another one babe! ")
+                print("This field cannot be changed! Choose another one! ")
                 user_choice = input("Which square do you want to fill out?" ).upper()
             else:
                 return a,b
@@ -169,7 +171,7 @@ def create_array_to_check(lst):
 
 
 def add_game_mode():
-    game_mode = input('''Select level!
+    game_mode = input('''    How brave are you? 😁
 
     Press 1 for EASY level
     Press 2 for MIDDLE level 
@@ -201,7 +203,7 @@ def valid_input_mode(game_mode):
 
 
 def game_core(missing_squares):
-    generate_sudoku_array()
+    sudoku_array = generate_sudoku_array()
     merged_array = merge_sudoku_array_together(sudoku_array)
     index_list = create_list_of_indices()
     sorted_index_list = create_indicies_of_missings(index_list, missing_squares)
@@ -222,24 +224,24 @@ def game_core(missing_squares):
             array_to_check = create_array_to_check(replaced_by_guess)
             one_array = merge_sudoku_array_together(sudoku_array)
             if array_to_check == one_array:
-                print("""  ______          _            _   _      _ 
+                print("\033[33m{}\033[00m" .format("""  ______          _            _   _      _ 
  |  ____|        | |          | | (_)    | |
  | |__ __ _ _ __ | |_ __ _ ___| |_ _  ___| |
  |  __/ _` | '_ \| __/ _` / __| __| |/ __| |
  | | | (_| | | | | || (_| \__ \ |_| | (__|_|
  |_|  \__,_|_| |_|\__\__,_|___/\__|_|\___(_)
-                                            """)
+                                            """))
                 print("You guessed all the numbers!\n")
                 quit()
 
 
 def main():
-    print("""                   __      __            ____            ____           __                  
+    print("\033[34m{}\033[00m" .format("""                   __      __            ____            ____           __                  
    _______  ______/ /___  / /____  __   / __/_  ______  / __/___ ______/ /_____  _______  __
   / ___/ / / / __  / __ \/ //_/ / / /  / /_/ / / / __ \/ /_/ __ `/ ___/ __/ __ \/ ___/ / / /
  (__  ) /_/ / /_/ / /_/ / ,< / /_/ /  / __/ /_/ / / / / __/ /_/ / /__/ /_/ /_/ / /  / /_/ / 
 /____/\__,_/\__,_/\____/_/|_|\__,_/  /_/  \__,_/_/ /_/_/  \__,_/\___/\__/\____/_/   \__, /  
-                                                                                   /____/   """)
+                                                                                   /____/   """))
     mode = add_game_mode()
     valid_input_mode(mode)
  
