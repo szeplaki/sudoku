@@ -74,9 +74,9 @@ def create_dont_touch_numbers(indexlst, missing_squares):
     return displayed_numbers
 
 
-def hide_numbers(merge_sudoku_array, lst_with_zeros, dont_touch_numbers):
+def hide_numbers(merge_sudoku_array, lst_of_missings, dont_touch_numbers):
     for i in range(len(merge_sudoku_array)):
-        for index in lst_with_zeros:
+        for index in lst_of_missings:
             if i == index:
                 merge_sudoku_array[i] = '.'
         for forbidden in dont_touch_numbers:
